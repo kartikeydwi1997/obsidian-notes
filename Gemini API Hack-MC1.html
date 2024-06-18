@@ -87,8 +87,8 @@
 <li data-line="14">
 <p><strong>Friend Request Management</strong></p>
 <pre><code>- `POST /friends/requests`: Send a friend request
-- `POST /friends/requests/{id}/accept`: Accept a friend request
-- `GET /friends/{id}`: Get the list of friends for the current user
+- `POST /friends/requests/respond`: Respond to a friend request
+- `GET /friends/{id}`: Get the list of friends for the current user id
 </code><button class="copy-code-button">Copy</button></pre>
 <p>DB Collections:</p>
 </li>
@@ -99,7 +99,7 @@
 <p><code>Summary</code>: To fetch list of users questions and answers </p>
 </li>
 </ol></div><div><p>Database Schema</p></div><div><ol>
-<li data-line="0">users table- </li>
+<li data-line="0">users collection- </li>
 </ol></div><div><pre><code>- `username`: String, required: true, unique: true
 - `email`: String, required: true, unique: true
 - `password`: String
@@ -146,14 +146,16 @@ curl --location 'http://localhost:4000/api/login' \
 
 }'
 </code><button class="copy-code-button">Copy</button></pre></div><div><ol start="2">
-<li data-line="0">profiles  table</li>
+<li data-line="0">profiles  collection</li>
 </ol></div><div><pre><code>- `_id`: ObjectId
 - `userId`: ObjectId (Reference to users)
 - `age`: Integer
 - `location`: Object
 - `interests`: Array of Strings
 - `bio`: String
+- `friends`:[FriendSchema]
 - `created_at`: ISODate
+
 </code><button class="copy-code-button">Copy</button></pre></div><div><ul>
 <li data-line="0">Create or update profile</li>
 </ul></div><div><pre><code>curl --location 'http://localhost:4000/api/profile' \
@@ -176,6 +178,41 @@ curl --location 'http://localhost:4000/api/login' \
 </code><button class="copy-code-button">Copy</button></pre></div><div><ul>
 <li data-line="0">Get user profile </li>
 </ul></div><div><pre><code>curl --location 'http://localhost:4000/api/profile/665a99bc1ce1051665e3ad71'
+</code><button class="copy-code-button">Copy</button></pre></div><div><ul>
+<li data-line="0">Send a request to a friend</li>
+</ul></div><div><pre><code>  
+
+curl&nbsp;--location&nbsp;'http://localhost:4000/api/
+
+&nbsp;&nbsp;&nbsp;&nbsp;friends/request'&nbsp;\
+
+--header&nbsp;'Content-Type:&nbsp;application/json'&nbsp;\
+
+--data&nbsp;'{
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"userId":&nbsp;"665aa0226a536dcb505578b8",
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"friendId":"665a9eb0917fe5235e95c5b4"
+
+}'
+</code><button class="copy-code-button">Copy</button></pre></div><div><ul>
+<li data-line="0">Respond to a friend request</li>
+</ul></div><div><pre><code>curl --location 'http://localhost:4000/api/friends/request/respond' \
+
+--header 'Content-Type: application/json' \
+
+--data '{
+
+"userId": "665aa0226a536dcb505578b8",
+
+"friendId":"665a9eb0917fe5235e95c5b4",
+
+"status":"accepted"
+
+}'
+</code><button class="copy-code-button">Copy</button></pre></div><div><ul>
+<li data-line="0">Get the list of friends for the current user id</li>
+</ul></div><div><pre><code>curl --location 'http://localhost:4000/api/friends/665aa0226a536dcb505578b8'
 </code><button class="copy-code-button">Copy</button></pre></div><div><ol start="3">
 <li data-line="0"><div class="list-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>
 <p><strong>Questions Collection</strong></p>
@@ -213,24 +250,10 @@ curl --location 'http://localhost:4000/api/login' \
 }'
 
 </code><button class="copy-code-button">Copy</button></pre></div><div><p><strong>Ensure that from each category at least one question is answered by the user. Add validation checks the frontend to check it and request the user to answer at least one</strong></p></div><div><ol start="5">
-<li data-line="0"><div class="list-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>
-<p>FriendRequests Collection</p>
+<li data-line="0"><div class="list-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>FriendSchema
 <ul>
-<li data-line="2"><code>_id</code>: ObjectId</li>
-<li data-line="3"><code>sender_id</code>: ObjectId (Reference to Users)</li>
-<li data-line="4"><code>receiver_id</code>: ObjectId (Reference to Users)</li>
-<li data-line="5"><code>status</code>: String ('pending', 'accepted', 'declined')</li>
-<li data-line="6"><code>created_at</code>: ISODate</li>
-<li data-line="7"><code>updated_at</code>: ISODate</li>
-</ul>
-</li>
-<li data-line="9"><div class="list-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div>
-<p>Friends Collection</p>
-<ul>
-<li data-line="11"><code>_id</code>: ObjectId</li>
-<li data-line="12"><code>user_id</code>: ObjectId (Reference to Users)</li>
-<li data-line="13"><code>friend_id</code>: ObjectId (Reference to Users)</li>
-<li data-line="14"><code>created_at</code>: ISODate</li>
+<li data-line="1">receiverId: ObjectId (Reference to Users)</li>
+<li data-line="2">status: enum: ['pending', 'accepted', 'declined']</li>
 </ul>
 </li>
 </ol></div><div class="mod-footer"></div></div></div></div><div class="sidebar-right sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content"><div class="tree-container mod-root nav-folder tree-item outline-tree" data-depth="0"><div class="tree-header"><span class="sidebar-section-header">Table Of Contents</span><button class="clickable-icon collapse-tree-button" aria-label="Collapse All"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg></button></div><div class="tree-scroll-area tree-item-children nav-folder-children"><div class="tree-item mod-tree-folder nav-folder mod-collapsible is-collapsed" style="display: none;"></div><div class="tree-item" data-depth="1"><a class="tree-link" href="MC1.html#MC1"><div class="tree-item-contents heading-link" heading-name="MC1"><span class="tree-item-title">MC1</span></div></a><div class="tree-item-children nav-folder-children"></div></div></div></div></div><script defer="">let rs = document.querySelector(".sidebar-right"); rs.classList.add("is-collapsed"); if (window.innerWidth > 768) rs.classList.remove("is-collapsed"); rs.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-right-width"));</script></div></div></body></html>
